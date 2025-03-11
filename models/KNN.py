@@ -3,7 +3,7 @@ import pandas as pd
 
 class KNNClassifier:
 
-    def __init__(self):
+    def __init__(self, k: int):
         pass
 
     def fit(self):
