@@ -12,5 +12,5 @@ class KNNClassifier:
     def predict(self):
         pass
 
-    def predict(self) -> float:
+    def score(self) -> float:
         pass
