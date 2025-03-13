@@ -15,28 +15,33 @@ class KNNClassifier:
 
         res = []
         
-        for i in range(test.shape[0]):                      #測試資料行數
-            te_num = test.loc[i].to_numpy()                 #轉成numpy
+        for i in range(test.shape[0]):                      # 測試資料行數
+            te_num = test.loc[i].to_numpy()                 # 轉成numpy
             distance_between = []
-            for j in range(self.df.shape[0]):               #訓練資料行數
-                df_num = self.df.loc[j].to_numpy()          #轉乘numpy
+            for j in range(self.df.shape[0]):               # 訓練資料行數
+                df_num = self.df.loc[j].to_numpy()          # 轉乘numpy
+ 
+                distance = 0                               	# 初始化距離
+ 
+                for k in range(test.shape[1]-1):            # 到outcome前
+                    distance += (te_num[k] - df_num[k])**2  # 算距離
 
-                distance = 0                               #初始化距離
-
-                for k in range(test.shape[1]-1):            #到outcome前
-                    distance += (te_num[k] - df_num[k])**2 #算距離
-
-                distance_between.append([distance**(1/2),self.df['Outcome'].values[j]])  #append開方距離以及outcome
+                distance_between.append([distance**(1/2),self.df['Outcome'].values[j]])  # append開方距離以及outcome
             distance_between.sort()
 
-            o = [0, 0]
-            for i in range(self.k):
-                o[distance_between[i][1]] += 1
-
-            if o[0] > o[1]:
-                res.append(0)
-            else:
-                res.append(1)
+            # Moore Majority Voting Algorithm
+            cnt = 0
+            major = distance_between[0][1]
+            for i in range(1, k):
+                if distance_between[i][1] == major:
+                    cnt += 1
+                else:
+                    cnt -= 1
+                
+                if cnt <= 0:
+                    major = distance_between[i][1]
+            
+            res.append(major)
 
         return res
 
