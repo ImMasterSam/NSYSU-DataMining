@@ -2,13 +2,22 @@ import numpy as np
 import pandas as pd
 from models.KNN import *
 
-train_path = "./dataset/dtA/test_data.csv"
+dataset = 'dtA'
+
+train_path = f"./dataset/{dataset}/train_data.csv"
 train_data = pd.read_csv(train_path)
-test_path = "./dataset/dtB/test_data.csv"
+
+x_train = train_data[:-1]
+y_train = train_data['Outcome']
+
+test_path = f"./dataset/{dataset}/test_data.csv"
 test_data = pd.read_csv(test_path)
 
-model = KNNClassifier(k = 5)
-model.fit(train_data)
-o = model.predict(test_data)
+x_test = test_data[:-1]
+y_test = test_data['Outcome']
 
-model.score(test_data,o)
+model = KNNClassifier(k = 20, normalize = False)
+model.fit(x_train,  y_train)
+y_predict = model.predict(x_test)
+
+model.score(y_test, y_predict)
