@@ -35,11 +35,11 @@ class KNNClassifier:
                 for k in range(x_test.shape[1]):            # 到outcome前
                     distance += (te_num[k] - df_num[k])**2  # 算距離
 
-                distance_between.append([distance**(1/2), self.trainLabels.values[j]])  # append開方距離以及outcome
+                distance_between.append([distance**(1/2), self.trainLabels[j]])  # append開方距離以及outcome
             distance_between.sort()
 
             # Moore Majority Voting Algorithm
-            cnt = 0
+            cnt = 1
             major = distance_between[0][1]
             for i in range(1, k):
                 if distance_between[i][1] == major:
@@ -47,7 +47,7 @@ class KNNClassifier:
                 else:
                     cnt -= 1
                 
-                if cnt <= 0:
+                if cnt < 0:
                     major = distance_between[i][1]
             
             res.append(major)
@@ -61,6 +61,7 @@ class KNNClassifier:
         right = 0
 
         for i in range(len(y_predict)):
+            print(y_test[i], y_predict[i])
             if y_test[i] == y_predict[i]:
                 total += 1
                 right += 1
