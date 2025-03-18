@@ -68,4 +68,4 @@ class KNNClassifier:
             else:
                 total += 1
 
-        print("Score:", (right/total)*100, "%")
+        print(f"Score: {right / total * 100: .2f} %")
