@@ -16,7 +16,7 @@ test_data = pd.read_csv(test_path)
 x_test = test_data.iloc[:, :-1]
 y_test = test_data.iloc[:, -1]
 
-model = KNNClassifier(k = 21, normalize = True, normDistance = 3)
+model = KNNClassifier(k = 21, normalize = True, normDistance = 2)
 model.fit(x_train,  y_train)
 y_predict = model.predict(x_test)
 
