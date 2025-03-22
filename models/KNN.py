@@ -42,7 +42,7 @@ class KNNClassifier:
             # Moore Majority Voting Algorithm
             cnt = 1
             major = distance_between[0][1]
-            for i in range(1, k):
+            for i in range(1, self.k):
                 if distance_between[i][1] == major:
                     cnt += 1
                 else:
@@ -67,5 +67,8 @@ class KNNClassifier:
                 right += 1
             else:
                 total += 1
+        
+        score = right / total * 100
 
-        print(f"Score: {right / total * 100: .2f} %")
+        print(f"Score: {score: .2f} %")
+        return  score
