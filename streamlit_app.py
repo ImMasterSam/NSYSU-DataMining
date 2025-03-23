@@ -67,22 +67,53 @@ def sideBar_config(model: str):
 # 頁面設定
 st.set_page_config(page_title = 'NSYSU - 資料探勘')
 st.title('資料探勘 Data Mining')
-st.write('---')
 
 # 側邊欄設定
 model_options = st.sidebar.selectbox(label = '請選擇分類模型: ',
                                      options = ("K Nearest Neighbors", "test"))
 sideBar_config(model_options)
 
+# 分頁設定
+models_tab, data_tab = st.tabs(['分析📈', '原始資料📃'])
 
-# 顯示資料
+# 資料讀取
 data_path = f'./dataset/dtA/train_data.csv'
 data = pd.read_csv(data_path)
-st.write('### 原始資料 : ')
-st.write(data)
 
-# 顯示訓練結果
-if Score:
-    st.success(f'正確率 : {Score:.2f} %')
-else:
-    st.warning(f'請先在左側側邊欄訓練後觀看結果')
+
+# 資料分析分頁
+with models_tab:
+
+    st.subheader('分布圖')
+
+    # 圖表調整欄
+    col1, col2 = st.columns(2)
+    with col1:
+        x_select = st.selectbox(label = 'X 軸',
+                                options = data.columns.values[:-1],
+                                index = 2)
+    with col2:
+        y_select = st.selectbox(label = 'Y 軸',
+                                options = data.columns.values[:-1],
+                                index = 3)
+
+    # 統整圖表 
+    st.scatter_chart(data, x = x_select, y = y_select, color = 'Outcome')
+
+    # fig, ax = plt.subplots()
+    # ax.scatter(data[x_select], data[y_select], c = data['Outcome'])
+    # st.pyplot(fig)
+
+    # 顯示訓練結果
+    st.subheader('模型訓練')
+    if Score:
+        st.success(f'正確率 : {Score:.2f} %')
+    else:
+        st.info(f'請先在左側側邊欄訓練後觀看結果')
+
+# 原始數據分頁
+with data_tab:
+
+    # 顯示資料
+    st.write('### 原始資料 : ')
+    st.write(data)
