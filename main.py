@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from models.KNN import *
+from models.SVM import *
 
 dataset = 'dtA'
 
@@ -17,7 +18,12 @@ x_test = test_data.iloc[:, :-1]
 y_test = test_data.iloc[:, -1]
 
 model = KNNClassifier(k = 21, normalize = True, normDistance = 2)
+model1 = SVMClassifier(learning_rate=0.01, n_iters=1000)
+
 model.fit(x_train,  y_train)
+model1.fit(x_train, y_train)
+
 y_predict = model.predict(x_test)
 
 model.score(y_test, y_predict)
+model1.score(x_test , y_test)
