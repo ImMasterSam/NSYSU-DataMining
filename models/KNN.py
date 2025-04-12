@@ -56,7 +56,9 @@ class KNNClassifier:
         return res
 
 
-    def score(self, y_test: pd.DataFrame, y_predict : list) -> float:
+    def score(self, x_test: pd.DataFrame, y_test : list) -> float:
+
+        y_predict = self.predict(x_test)
         
         total = 0
         right = 0

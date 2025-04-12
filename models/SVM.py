@@ -41,12 +41,10 @@ class SVMClassifier:
 
         #分類 (x.w + b) 內積 + bias
         classification = np.dot(x_test, self.w)+self.b
-        print(classification)
         return np.where(classification <= 0, 0, 1)
 
     def score(self, x_test:pd.DataFrame, y_test: pd.Series) -> float:
         predictions = self.predict(x_test)
-        print(predictions)
 
         accuracy = np.mean(y_test == predictions)
         print(f"Score: {accuracy * 100: .2f} %")
