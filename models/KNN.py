@@ -56,21 +56,8 @@ class KNNClassifier:
         return res
 
 
-    def score(self, x_test: pd.DataFrame, y_test : list) -> float:
-
+    def score(self, x_test: pd.DataFrame, y_test : pd.Series) -> float:
         y_predict = self.predict(x_test)
-        
-        total = 0
-        right = 0
-
-        for i in range(len(y_predict)):
-            if y_test[i] == y_predict[i]:
-                total += 1
-                right += 1
-            else:
-                total += 1
-        
-        score = right / total * 100
-
-        print(f"Score: {score: .2f} %")
-        return  score
+        accuracy = np.mean(y_predict == y_test.to_numpy().astype(int))
+        print(f"Neural Network Classifier Score:  {accuracy * 100:.2f} %")
+        return accuracy

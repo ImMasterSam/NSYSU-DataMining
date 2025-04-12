@@ -3,7 +3,7 @@ import pandas as pd
 
 class SVMClassifier:
 
-    def __init__(self, learning_rate=0.001, n_iters = 1000, normalize: bool = True):
+    def __init__(self, learning_rate = 0.001, n_iters = 1000, normalize: bool = True):
         self.lr = learning_rate
         self.n_iters = n_iters
         self.normalize = normalize
@@ -45,8 +45,7 @@ class SVMClassifier:
 
     def score(self, x_test:pd.DataFrame, y_test: pd.Series) -> float:
         predictions = self.predict(x_test)
-
         accuracy = np.mean(y_test == predictions)
-        print(f"Score: {accuracy * 100: .2f} %")
+        print(f"Linear SVM Classifier Score: {accuracy * 100: .2f} %")
         return accuracy
         

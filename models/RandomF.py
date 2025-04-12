@@ -105,5 +105,5 @@ class RandomForestClassifier:
     def score(self, x_test: pd.DataFrame, y_test: pd.Series):
         predictions = self.predict(x_test)
         accuracy = np.mean(predictions == y_test.to_numpy())
-        print(f"Score: {accuracy * 100:.2f} %")
+        print(f"Random Forest Classifier Score: {accuracy * 100:.2f} %")
         return accuracy

@@ -20,20 +20,23 @@ test_data = pd.read_csv(test_path)
 x_test = test_data.iloc[:, :-1]
 y_test = test_data.iloc[:, -1]
 
-model = KNNClassifier(k = 21, normalize = True, normDistance = 2)
-model1 = SVMClassifier(learning_rate=0.01, n_iters=1000)
-model2 = RandomForestClassifier()
-model3 = NeuralNetClassifier()
-model4 = SVMClassifierWithKernel()
+# 建立模型
+KNN_model    = KNNClassifier(k = 21, normalize = True, normDistance = 2)
+SVM_model    = SVMClassifier(learning_rate=0.01, n_iters=1000)
+RADF_model   = RandomForestClassifier()
+Neural_model = NeuralNetClassifier()
+SVMK_model   = SVMClassifierWithKernel()
 
-model.fit(x_train,  y_train)
-model1.fit(x_train, y_train)
-model2.fit(x_train, y_train)
-model3.fit(x_train, y_train)
-model4.fit(x_train, y_train)
+# 訓練模型
+KNN_model.fit(x_train,  y_train)
+SVM_model.fit(x_train, y_train)
+RADF_model.fit(x_train, y_train)
+Neural_model.fit(x_train, y_train)
+SVMK_model.fit(x_train, y_train)
 
-model.score(x_test, y_test)
-model1.score(x_test , y_test)
-model2.score(x_test , y_test)
-model3.score(x_test , y_test)
-model4.score(x_test, y_test)
+# 測試模型
+KNN_model.score(x_test, y_test)
+SVM_model.score(x_test , y_test)
+RADF_model.score(x_test , y_test)
+Neural_model.score(x_test , y_test)
+SVMK_model.score(x_test, y_test)

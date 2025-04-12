@@ -61,5 +61,5 @@ class SVMClassifierWithKernel:
         y_true = np.where(y_test <= 0, -1, 1)
         predictions = self.predict(x_test)
         accuracy = np.mean(predictions == y_true)
-        print(f"Score: {accuracy * 100:.2f} %")
+        print(f"Kernel SVM Classifier Score: {accuracy * 100:.2f} %")
         return accuracy
