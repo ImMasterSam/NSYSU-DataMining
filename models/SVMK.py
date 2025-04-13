@@ -69,7 +69,6 @@ class SVMClassifierWithKernel:
 
     def score(self, x_test: pd.DataFrame, y_test: pd.Series) -> float:
         predictions = self.predict(x_test)
-        print("Predictions:", predictions)  # 印出預測結果
         accuracy = np.mean(predictions == y_test)
         print(f"SVM with Kernel Classifier Score: {accuracy * 100:.2f}%")
         return accuracy
