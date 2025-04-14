@@ -28,9 +28,7 @@ def run_model():
 
     model = KNNClassifier(k = kValue, normalize = Normalize, normDistance = NormValue)
     model.fit(x_train,  y_train)
-    y_predict = model.predict(x_test)
-
-    Score = model.analysis(y_test, y_predict)
+    Score = model.score(x_test, y_test) * 100
 
 
 def sideBar_config(model: str):
@@ -70,7 +68,7 @@ st.title('資料探勘 Data Mining')
 
 # 側邊欄設定
 model_options = st.sidebar.selectbox(label = '請選擇分類模型: ',
-                                     options = ("K Nearest Neighbors", "test"))
+                                     options = ('K Nearest Neighbors', 'Linear SVM', 'Neural Network', 'Random Forest', 'Kernel SVM', 'test'))
 sideBar_config(model_options)
 
 # 分頁設定
