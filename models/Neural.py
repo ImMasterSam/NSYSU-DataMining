@@ -4,7 +4,7 @@ from models.model import Classifier
 
 class NeuralNetClassifier(Classifier):
 
-    def __init__(self, n_hidden: int = 10, learning_rate: float = 0.01, n_iters: int = 1000, normalize: bool = True):
+    def __init__(self, n_hidden: int = 10, learning_rate: float = 0.001, n_iters: int = 1000, normalize: bool = True):
         super().__init__('Neural Network Classifier', normalize)
         self.n_hidden = n_hidden
         self.lr = learning_rate
