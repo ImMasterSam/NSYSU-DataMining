@@ -4,7 +4,7 @@ from models.model import Classifier
 
 class SVMClassifier(Classifier):
 
-    def __init__(self, learning_rate = 0.001, n_iters = 1000, normalize: bool = True):
+    def __init__(self, learning_rate: float = 0.001, n_iters: int = 1000, normalize: bool = True):
         super().__init__('Linear SVM Classifier', normalize)
         self.lr = learning_rate
         self.n_iters = n_iters
