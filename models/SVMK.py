@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
+from models.model import Classifier
 
-class SVMClassifierWithKernel:
-    def __init__(self, kernel="rbf", C=3, gamma=0.2, learning_rate=0.005, n_iters=1000, normalize=True):
+class SVMClassifierWithKernel(Classifier):
+    def __init__(self, kernel="rbf", C=3, gamma=0.2, learning_rate=0.005, n_iters=1000, normalize: bool = True):
+        super().__init__('Kernel SVM Classifier', normalize)
         self.kernel = kernel
         self.C = C
         self.gamma = gamma
         self.lr = learning_rate
         self.n_iters = n_iters
-        self.normalize = normalize
         self.alpha = None
         self.b = 0
         self.x_train = None
@@ -66,9 +67,3 @@ class SVMClassifierWithKernel:
         K = self._kernel_function(x_test, self.x_train)
         decision = np.dot(K, self.alpha * self.y_train) + self.b
         return np.where(decision >= 0, 1, 0)
-
-    def score(self, x_test: pd.DataFrame, y_test: pd.Series) -> float:
-        predictions = self.predict(x_test)
-        accuracy = np.mean(predictions == y_test)
-        print(f"SVM with Kernel Classifier Score: {accuracy * 100:.2f}%")
-        return accuracy

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from models.model import Classifier
 from collections import Counter
 
 class DecisionTree:
@@ -75,8 +76,9 @@ class DecisionTree:
         else:
             return self._traverse_tree(x, right_branch)
 
-class RandomForestClassifier:
-    def __init__(self, n_estimators=10, max_depth=10, min_samples_split=2):
+class RandomForestClassifier(Classifier):
+    def __init__(self, n_estimators=10, max_depth=10, min_samples_split=2, normalize: bool = True):
+        super().__init__('Random Forest Classifier', normalize)
         self.n_estimators = n_estimators
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
@@ -101,9 +103,3 @@ class RandomForestClassifier:
         tree_preds = tree_preds.T
         final_preds = [Counter(row).most_common(1)[0][0] for row in tree_preds]
         return np.array(final_preds)
-
-    def score(self, x_test: pd.DataFrame, y_test: pd.Series):
-        predictions = self.predict(x_test)
-        accuracy = np.mean(predictions == y_test.to_numpy())
-        print(f"Random Forest Classifier Score: {accuracy * 100:.2f} %")
-        return accuracy

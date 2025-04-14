@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
+from models.model import Classifier
 
-class SVMClassifier:
+class SVMClassifier(Classifier):
 
     def __init__(self, learning_rate = 0.001, n_iters = 1000, normalize: bool = True):
+        super().__init__('Linear SVM Classifier', normalize)
         self.lr = learning_rate
         self.n_iters = n_iters
-        self.normalize = normalize
         self.w = None #公式的權重
         self.b = None #偏差
         pass
@@ -42,10 +43,4 @@ class SVMClassifier:
         #分類 (x.w + b) 內積 + bias
         classification = np.dot(x_test, self.w)+self.b
         return np.where(classification <= 0, 0, 1)
-
-    def score(self, x_test:pd.DataFrame, y_test: pd.Series) -> float:
-        predictions = self.predict(x_test)
-        accuracy = np.mean(y_test == predictions)
-        print(f"Linear SVM Classifier Score: {accuracy * 100: .2f} %")
-        return accuracy
         

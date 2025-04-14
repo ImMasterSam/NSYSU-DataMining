@@ -1,13 +1,14 @@
 import numpy as np
 import pandas as pd
+from models.model import Classifier
 
-class NeuralNetClassifier:
+class NeuralNetClassifier(Classifier):
 
     def __init__(self, n_hidden=10, learning_rate=0.01, n_iters=1000, normalize: bool = True):
+        super().__init__('Neural Network Classifier', normalize)
         self.n_hidden = n_hidden
         self.lr = learning_rate
         self.n_iters = n_iters
-        self.normalize = normalize
         self.params = {}
 
     def _sigmoid(self, z):
