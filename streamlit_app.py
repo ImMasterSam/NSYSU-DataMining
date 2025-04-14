@@ -30,7 +30,7 @@ def run_model():
     model.fit(x_train,  y_train)
     y_predict = model.predict(x_test)
 
-    Score = model.score(y_test, y_predict)
+    Score = model.analysis(y_test, y_predict)
 
 
 def sideBar_config(model: str):

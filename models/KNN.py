@@ -40,7 +40,7 @@ class KNNClassifier(Classifier):
                 distance_between.append([distance**(1/self.normDis), self.trainLabels[j]])  # append開方距離以及outcome
             distance_between.sort()
 
-            # Moore Majority Voting Algorithm
+            # 摩爾多數投票法
             cnt = 1
             major = distance_between[0][1]
             for i in range(1, self.k):
@@ -54,4 +54,4 @@ class KNNClassifier(Classifier):
             
             res.append(major)
 
-        return res
+        return np.array(res)

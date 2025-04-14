@@ -35,8 +35,8 @@ Neural_model.fit(x_train, y_train)
 SVMK_model.fit(x_train, y_train)
 
 # 測試模型
-KNN_model.score(x_test, y_test)
-SVM_model.score(x_test , y_test)
-RADF_model.score(x_test , y_test)
-Neural_model.score(x_test , y_test)
-SVMK_model.score(x_test, y_test)
+KNN_model.analysis(x_test, y_test)
+SVM_model.analysis(x_test , y_test)
+RADF_model.analysis(x_test , y_test)
+Neural_model.analysis(x_test , y_test)
+SVMK_model.analysis(x_test, y_test)

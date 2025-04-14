@@ -76,9 +76,3 @@ class NeuralNetClassifier(Classifier):
         A2 = self._sigmoid(Z2)
         predictions = (A2 > 0.5).astype(int).flatten()
         return predictions
-
-    def score(self, x_test: pd.DataFrame, y_test: pd.Series):
-        y_predict = self.predict(x_test)
-        accuracy = np.mean(y_predict == y_test.to_numpy().astype(int))
-        print(f"Neural Network Classifier Score:  {accuracy * 100:.2f} %")
-        return accuracy
