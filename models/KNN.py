@@ -4,7 +4,7 @@ from models.model import Classifier
 
 class KNNClassifier(Classifier):
 
-    def __init__(self, k: int, normalize: bool = True, normDistance: int = 2):
+    def __init__(self, k: int, normDistance: int = 2, normalize: bool = True):
         super().__init__('KNN Classifier', normalize)
         self.k = k
         self.normDis = normDistance

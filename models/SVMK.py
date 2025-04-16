@@ -4,7 +4,7 @@ from models.model import Classifier
 from sklearn import svm
 
 class SVMClassifierWithKernel(Classifier):
-    def __init__(self, kernel="rbf", C=3, gamma=0.2, n_iters=1000, normalize: bool = True):
+    def __init__(self, kernel: str = "rbf", C: float = 3, gamma: float = 0.2, n_iters: int = 1000, normalize: bool = True):
         super().__init__('Kernel SVM Classifier', normalize)
         self.clf = svm.SVC(kernel = kernel, C = C, gamma = gamma)
 

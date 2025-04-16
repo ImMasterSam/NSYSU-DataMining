@@ -5,7 +5,7 @@ from collections import Counter
 from sklearn.ensemble import RandomForestClassifier as skRandomForest
 
 class RandomForestClassifier(Classifier):
-    def __init__(self, n_estimators=10, max_depth=10, min_samples_split=2, normalize: bool = True):
+    def __init__(self, n_estimators: int = 10, max_depth: int = 10, min_samples_split: int = 2, normalize: bool = True):
         super().__init__('Random Forest Classifier', normalize)
         self.clf = skRandomForest(n_estimators = n_estimators, max_depth = max_depth, min_samples_split = min_samples_split)
 

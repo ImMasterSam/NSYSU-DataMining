@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import prettytable as pt
+import time
 
 class Classifier:
 
@@ -21,8 +22,12 @@ class Classifier:
         print(f"{self.name} Score:  {accuracy * 100:.2f} %")
         return accuracy
 
-    def analysis(self, x_test: pd.DataFrame, y_test : pd.Series) -> dict:
+    def analysis(self, x_test: pd.DataFrame, y_test : pd.Series, output: bool = False) -> dict:
         ''' 輸出各項測量值 '''
+
+        start_time = time.time()
+        # 執行一些程式碼
+        end_time = time.time()
 
         measures = {}
 
@@ -30,7 +35,11 @@ class Classifier:
         field_names = ['Classifier', 'Sensitivity', 'Specificity', 'Precission', 'Recall', 'F-Score', 'Accuracy']
         table.field_names = field_names
 
+        start_time = time.time()
         y_predict = self.predict(x_test)
+        end_time = time.time()
+        predict_time = end_time - start_time
+
         p = np.sum(y_test == 1)
         n = np.sum(y_test == 0)
         all = p + n
@@ -39,6 +48,7 @@ class Classifier:
         tn = np.sum((y_test == 0) & (y_predict == 0))
         fn = np.sum((y_test == 1) & (y_predict == 0))
 
+        measures['Predict time'] = predict_time
         measures['Sensitivity'] = tp / p
         measures['Specificity'] = tn / n
         measures['Precission'] = tp / (tp + fp)
@@ -47,7 +57,9 @@ class Classifier:
         measures['Accuracy'] = (tp + tn) / all
         
         table.add_row([self.name] + [*(str(round(measures[s] * 100, 2)) + " %" for s in field_names[1:])])
-        print(table)
+
+        if output:
+            print(table)
 
         return measures
         
