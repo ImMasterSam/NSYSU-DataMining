@@ -15,6 +15,12 @@ learning_rate = 0.001
 n_iters = 1000
 Score = 0
 Analysis = {}
+n_estimators = 10
+max_depth = 10
+min_samples_split = 2
+kernal = 'rbf'
+c = 1.0
+gamma = 0.2
 
 dtA_train_path = f'./dataset/dtA/train_data.csv'
 dtA_test_path = f'./dataset/dtA/test_data.csv'
@@ -23,7 +29,7 @@ dtB_test_path = f'./dataset/dtB/test_data.csv'
 
 def run_model(model_option):
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis
+    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
 
     dataset = 'dtA'
 
@@ -42,8 +48,8 @@ def run_model(model_option):
     model_options = {'K Nearest Neighbors' : KNNClassifier(k = kValue, normalize = Normalize, normDistance = NormValue),
                      'Linear SVM' : SVMClassifier(learning_rate = learning_rate, n_iters = n_iters),
                      'Neural Network' : NeuralNetClassifier(learning_rate = learning_rate, n_iters = n_iters),
-                     'Random Forest' : RandomForestClassifier(),
-                     'Kernel SVM' : SVMClassifierWithKernel(),}
+                     'Random Forest' : RandomForestClassifier(n_estimators= n_estimators , max_depth= max_depth , min_samples_split= min_samples_split , normalize= Normalize),
+                     'Kernel SVM' : SVMClassifierWithKernel(kernel= kernal , C=c , gamma= gamma , n_iters= n_iters , normalize= Normalize),}
 
     model = model_options[model_option]
     model.fit(x_train,  y_train)
@@ -53,8 +59,7 @@ def run_model(model_option):
 
 def sideBar_config(model: str):
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters
-
+    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
     st.sidebar.write('## 參數設定')
 
     match model:
@@ -88,7 +93,7 @@ def sideBar_config(model: str):
                               help = '控制訓練速度，太大容易訓練緩慢，太小容易無法收斂')
             n_iters = st.sidebar.slider(label = 'N 次迭代值',
                               min_value = 100,
-                              max_value = 10000,
+                              max_value = 2000,
                               value = 1000,
                               step = 100,
                               help = '模型學習的次數')
@@ -113,9 +118,55 @@ def sideBar_config(model: str):
                                             value = True,
                                             help = '將資料標準化後再進行分類')
         case 'Random Forest':
-            st.sidebar.write('此模型無自訂參數')
+            n_estimators = st.sidebar.slider(label = '決策樹的數量',
+                                min_value = 1,
+                                max_value = 100,
+                                value = 10,
+                                step = 1,
+                                help = '表隨機森林中樹的數量')
+            max_depth = st.sidebar.slider(label = '樹的最大深度',
+                                min_value = 1,
+                                max_value = 100,
+                                value = 10,
+                                step = 1,
+                                help = '表決策樹的最大深度')
+            min_samples_split = st.sidebar.slider(label = '最小分割樣本數',
+                                min_value = 1,
+                                max_value = 50,
+                                value = 2,
+                                step = 1,
+                                help = '表什麼時候該停止繼續分裂節點')
+            Normalize = st.sidebar.checkbox(label = '標準化資料',
+                                            value = True,
+                                            help = '將資料標準化後再進行分類')
         case 'Kernel SVM':
-            st.sidebar.write('此模型無自訂參數')
+            kernal = st.sidebar.selectbox(label = '核函數',
+                                options = ('linear', 'poly', 'rbf', 'sigmoid'),
+                                index = 2,
+                                help = '表決定資料的邊界')
+            c = st.sidebar.number_input(label = '懲罰參數 C',
+                                min_value = 0.01,
+                                max_value = 100.0,
+                                value = 1.0,
+                                step = 0.1,
+                                format = '%.2f',
+                                help = '表對錯誤分類的懲罰程度')
+            gamma = st.sidebar.number_input(label = 'Gamma 值',
+                                min_value = 0.01,
+                                max_value = 100.0,
+                                value = 0.2,
+                                step = 0.01,
+                                format = '%.2f',
+                                help = '表決定資料的邊界')
+            n_iters = st.sidebar.slider(label = 'N 次迭代值',
+                              min_value = 100,
+                              max_value = 10000,
+                              value = 1000,
+                              step = 100,
+                              help = '模型學習的次數')
+            Normalize = st.sidebar.checkbox(label = '標準化資料',
+                                            value = True,
+                                            help = '將資料標準化後再進行分類')
         case '綜合測試':
             st.sidebar.write('花費較多時間，點擊訓練按鈕後請稍後')
         case 'test':
