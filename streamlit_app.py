@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 from models.KNN import *
 from models.SVM import *
@@ -61,8 +62,12 @@ def run_model(model_option):
     y_test = test_data.iloc[:, -1]
 
     model = model_options[model_option]
+    start_time = time.time()
     model.fit(x_train,  y_train)
+    end_time = time.time()
+    fit_time = end_time - start_time
     A_Analysis = model.analysis(x_test, y_test)
+    A_Analysis['Fit time'] = fit_time
     A_Score = A_Analysis['Accuracy'] * 100
 
     # Data Set B
@@ -81,19 +86,23 @@ def run_model(model_option):
     y_test = test_data.iloc[:, -1]
 
     model = model_options[model_option]
+    start_time = time.time()
     model.fit(x_train,  y_train)
+    end_time = time.time()
+    fit_time = end_time - start_time
     B_Analysis = model.analysis(x_test, y_test)
+    B_Analysis['Fit time'] = fit_time
     B_Score = B_Analysis['Accuracy'] * 100
 
 def test_model():
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
+    global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma
 
 
 
 def sideBar_config(model: str):
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
+    global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma
     st.sidebar.write('## 參數設定')
 
     match model:
@@ -263,13 +272,39 @@ with models_tab:
     # 顯示訓練結果
     st.subheader('模型訓練結果')
     if A_Score:
+
+        measures = pd.DataFrame.from_records({'dtA': A_Analysis, 'dtB': B_Analysis})
+
         st.write(f'### 模型 : {model_options} Classifier')
         st.write(f'##### 資料集 A')
         st.success(f'正確率 : {A_Score:.2f} %')
         st.table(A_Analysis)
+
+        A_col1, A_col2 = st.columns(2)
+        with A_col1:
+            st.info(f'訓練時間 : {measures['dtA']['Fit time']: .3f} 秒')
+        with A_col2:
+            st.info(f'預測時間 : {measures['dtA']['Predict time']: .3f} 秒')
+
+        st.write('---')
+
         st.write(f'##### 資料集 B')
         st.success(f'正確率 : {B_Score:.2f} %')
         st.table(B_Analysis)
+
+        B_col1, B_col2 = st.columns(2)
+        with B_col1:
+            st.info(f'訓練時間 : {measures['dtB']['Fit time']: .3f} 秒')
+        with B_col2:
+            st.info(f'預測時間 : {measures['dtB']['Predict time']: .3f} 秒')
+
+        st.write('---')
+
+        st.write(f'##### 比較結果')
+
+        analysis = measures.drop(['Predict time', 'Fit time']) * 100
+        st.bar_chart(analysis, x_label = '結果 (%)', stack = False, horizontal = True)
+
     else:
         st.info(f'請先在左側側邊欄訓練後觀看結果')
 
