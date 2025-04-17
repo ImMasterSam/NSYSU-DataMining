@@ -32,7 +32,7 @@ class Classifier:
         measures = {}
 
         table = pt.PrettyTable()
-        field_names = ['Classifier', 'Sensitivity', 'Specificity', 'Precission', 'Recall', 'F-Score', 'Accuracy']
+        field_names = ['Classifier', 'Sensitivity', 'Specificity', 'Precision', 'Recall', 'F-Score', 'Accuracy']
         table.field_names = field_names
 
         start_time = time.time()
@@ -51,9 +51,9 @@ class Classifier:
         measures['Predict time'] = predict_time
         measures['Sensitivity'] = tp / p
         measures['Specificity'] = tn / n
-        measures['Precission'] = tp / (tp + fp)
+        measures['Precision'] = tp / (tp + fp)
         measures['Recall'] = tn / (tn + fn)
-        measures['F-Score'] = (2 * measures['Precission'] * measures['Recall']) / (measures['Precission'] + measures['Recall'])
+        measures['F-Score'] = (2 * measures['Precision'] * measures['Recall']) / (measures['Precision'] + measures['Recall'])
         measures['Accuracy'] = (tp + tn) / all
         
         table.add_row([self.name] + [*(str(round(measures[s] * 100, 2)) + " %" for s in field_names[1:])])

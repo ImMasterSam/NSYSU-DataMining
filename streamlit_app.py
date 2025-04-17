@@ -21,13 +21,16 @@ kernal = 'rbf'
 c = 1.0
 gamma = 0.2
 
+test_iters = 1
+test_flag = False
+
 A_Score = 0
 A_Analysis = {}
-A_test_measures = {}
+A_test_measures = []
 
 B_Score = 0
 B_Analysis = {}
-B_test_measures = {}
+B_test_measures = []
 
 dtA_train_path = f'./dataset/dtA/train_data.csv'
 dtA_test_path = f'./dataset/dtA/test_data.csv'
@@ -46,7 +49,7 @@ def run_model(model_option):
                      'Random Forest' : RandomForestClassifier(n_estimators= n_estimators , max_depth= max_depth , min_samples_split= min_samples_split , normalize= Normalize),
                      'Kernel SVM' : SVMClassifierWithKernel(kernel= kernal , C=c , gamma= gamma , n_iters= n_iters , normalize= Normalize),}
 
-    # Data Set A
+    # Dataset A
     dataset = 'dtA'
 
     train_path = f"./dataset/{dataset}/train_data.csv"
@@ -70,7 +73,7 @@ def run_model(model_option):
     A_Analysis['Fit time'] = fit_time
     A_Score = A_Analysis['Accuracy'] * 100
 
-    # Data Set B
+    # Dataset B
     dataset = 'dtB'
 
     train_path = f"./dataset/{dataset}/train_data.csv"
@@ -94,15 +97,91 @@ def run_model(model_option):
     B_Analysis['Fit time'] = fit_time
     B_Score = B_Analysis['Accuracy'] * 100
 
-def test_model():
+def test_models():
 
     global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma
+    global A_Score, B_Score, A_Analysis, B_Analysis, A_test_measures, B_test_measures, test_iters
+
+    models = ('K Nearest Neighbors', 'Linear SVM', 'Neural Network', 'Random Forest', 'Kernel SVM')
+    model_options = {'K Nearest Neighbors' : KNNClassifier(k = kValue, normalize = Normalize, normDistance = NormValue),
+                     'Linear SVM' : SVMClassifier(learning_rate = learning_rate, n_iters = n_iters),
+                     'Neural Network' : NeuralNetClassifier(learning_rate = learning_rate, n_iters = n_iters),
+                     'Random Forest' : RandomForestClassifier(n_estimators= n_estimators , max_depth= max_depth , min_samples_split= min_samples_split , normalize= Normalize),
+                     'Kernel SVM' : SVMClassifierWithKernel(kernel= kernal , C=c , gamma= gamma , n_iters= n_iters , normalize= Normalize),}
+    
+    # Dataset A
+    dataset = 'dtA'
+    train_path = f"./dataset/{dataset}/train_data.csv"
+    train_data = pd.read_csv(train_path)
+
+    x_train = train_data.iloc[:, :-1]
+    y_train = train_data.iloc[:, -1]
+
+    test_path = f"./dataset/{dataset}/test_data.csv"
+    test_data = pd.read_csv(test_path)
+
+    x_test = test_data.iloc[:, :-1]
+    y_test = test_data.iloc[:, -1]
+
+    for model_name in models:
+
+        total_measures = []
+
+        for _ in range(test_iters):
+
+            model = model_options[model_name]           # 建立模型
+            start_time = time.time()
+            model.fit(x_train,  y_train)                # 訓練模型
+            end_time = time.time()
+            fit_time = end_time - start_time
+
+            measures = model.analysis(x_test, y_test)   # 測試模型
+            measures['Fit time'] = fit_time
+
+            total_measures.append(measures)
+
+        measures_df = pd.DataFrame.from_records(total_measures)
+        A_test_measures.append({model_name : measures_df.mean().to_dict()})
+    
+    # Dataset B
+    dataset = 'dtB'
+    train_path = f"./dataset/{dataset}/train_data.csv"
+    train_data = pd.read_csv(train_path)
+
+    x_train = train_data.iloc[:, :-1]
+    y_train = train_data.iloc[:, -1]
+
+    test_path = f"./dataset/{dataset}/test_data.csv"
+    test_data = pd.read_csv(test_path)
+
+    x_test = test_data.iloc[:, :-1]
+    y_test = test_data.iloc[:, -1]
+
+    for model_name in models:
+
+        total_measures = []
+
+        for _ in range(test_iters):
+
+            model = model_options[model_name]           # 建立模型
+            start_time = time.time()
+            model.fit(x_train,  y_train)                # 訓練模型
+            end_time = time.time()
+            fit_time = end_time - start_time
+
+            measures = model.analysis(x_test, y_test)   # 測試模型
+            measures['Fit time'] = fit_time
+
+            total_measures.append(measures)
+
+        measures_df = pd.DataFrame.from_records(total_measures)
+        B_test_measures.append({model_name : measures_df.mean().to_dict()})
 
 
 
 def sideBar_config(model: str):
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma
+    global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma, test_iters, test_flag
     st.sidebar.write('## 參數設定')
 
     match model:
@@ -211,12 +290,18 @@ def sideBar_config(model: str):
                                             value = True,
                                             help = '將資料標準化後再進行分類')
         case '綜合測試':
-
-            st.sidebar.warning('花費較多時間，點擊訓練按鈕後請稍後')
+            test_iters = st.sidebar.slider(label = '重複試驗次數',
+                                           min_value = 1,
+                                           max_value = 15,
+                                           step = 1,
+                                           value = 1,
+                                           help = '每個模型在每個資料集的重複試驗次數')
+            st.sidebar.warning('花費較多時間，點擊按鈕後請稍後')
 
     if st.sidebar.button(label = '訓練'):
-        if model == '綜合測驗':
-            test_model()
+        if model == '綜合測試':
+            test_flag = True
+            test_models()
         else:
             run_model(model_options)
 
@@ -271,11 +356,74 @@ with models_tab:
 
     # 顯示訓練結果
     st.subheader('模型訓練結果')
-    if A_Score:
+    if test_flag:
+   
+        def flatten_results(results_list):
+            flattened = {}
+            for entry in results_list:
+                for model_name, metrics in entry.items():
+                    flattened[model_name] = metrics
+            return flattened
+
+        A_test_result = flatten_results(A_test_measures)
+        A_test_df = pd.DataFrame(A_test_result).T  # 模型為 index
+
+        st.write('### 資料集 A 測試結果')
+
+        st.write('##### 準確度 Accuracy')
+        st.bar_chart(A_test_df[['Accuracy']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### F - Score')
+        st.bar_chart(A_test_df[['F-Score']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 召回率 Recall')
+        st.bar_chart(A_test_df[['Recall']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 精準率 Precision')
+        st.bar_chart(A_test_df[['Precision']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 特異度 Specificity')
+        st.bar_chart(A_test_df[['Specificity']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 靈敏度 Sensitivity')
+        st.bar_chart(A_test_df[['Sensitivity']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 訓練時間 Fit time')
+        st.bar_chart(A_test_df[['Fit time']], x_label = '執行時間 (秒)', horizontal = True)
+        st.write('##### 預測時間 Predict time')
+        st.bar_chart(A_test_df[['Predict time']], x_label = '結果 (%)', horizontal = True)
+
+        st.write('##### 綜合比較')
+        st.bar_chart(A_test_df.drop(axis = 1, labels = ['Predict time', 'Fit time']), stack = False, horizontal = False)
+
+        st.write('---')
+
+        st.write('### 資料集 B 測試結果')
+
+        B_test_result = flatten_results(B_test_measures)
+        B_test_df = pd.DataFrame(B_test_result).T  # 模型為 index
+
+        st.write('##### 準確度 Accuracy')
+        st.bar_chart(B_test_df[['Accuracy']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### F - Score')
+        st.bar_chart(B_test_df[['F-Score']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 召回率 Recall')
+        st.bar_chart(B_test_df[['Recall']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 精準率 Precision')
+        st.bar_chart(B_test_df[['Precision']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 特異度 Specificity')
+        st.bar_chart(B_test_df[['Specificity']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 靈敏度 Sensitivity')
+        st.bar_chart(B_test_df[['Sensitivity']] * 100, x_label = '結果 (%)', horizontal = True)
+        st.write('##### 訓練時間 Fit time')
+        st.bar_chart(B_test_df[['Fit time']], x_label = '執行時間 (秒)', horizontal = True)
+        st.write('##### 預測時間 Predict time')
+        st.bar_chart(B_test_df[['Predict time']], x_label = '結果 (%)', horizontal = True)
+
+        st.write('##### 綜合比較')
+        st.bar_chart(B_test_df.drop(axis = 1, labels = ['Predict time', 'Fit time']), stack = False, horizontal = False)
+
+
+    elif A_Score:
 
         measures = pd.DataFrame.from_records({'dtA': A_Analysis, 'dtB': B_Analysis})
-
         st.write(f'### 模型 : {model_options} Classifier')
+
+        # Dataset A
         st.write(f'##### 資料集 A')
         st.success(f'正確率 : {A_Score:.2f} %')
         st.table(A_Analysis)
@@ -288,6 +436,7 @@ with models_tab:
 
         st.write('---')
 
+        # Dataset B
         st.write(f'##### 資料集 B')
         st.success(f'正確率 : {B_Score:.2f} %')
         st.table(B_Analysis)
