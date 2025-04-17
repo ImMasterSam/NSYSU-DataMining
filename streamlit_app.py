@@ -14,13 +14,14 @@ Normalize = True
 learning_rate = 0.001
 n_iters = 1000
 Score = 0
-Analysis = {}
 n_estimators = 10
 max_depth = 10
 min_samples_split = 2
 kernal = 'rbf'
 c = 1.0
 gamma = 0.2
+Analysis = {}
+test_measures = {}
 
 dtA_train_path = f'./dataset/dtA/train_data.csv'
 dtA_test_path = f'./dataset/dtA/test_data.csv'
@@ -55,6 +56,11 @@ def run_model(model_option):
     model.fit(x_train,  y_train)
     Analysis = model.analysis(x_test, y_test)
     Score = Analysis['Accuracy'] * 100
+
+def test_model():
+
+    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
+
 
 
 def sideBar_config(model: str):
@@ -168,12 +174,14 @@ def sideBar_config(model: str):
                                             value = True,
                                             help = '將資料標準化後再進行分類')
         case '綜合測試':
-            st.sidebar.write('花費較多時間，點擊訓練按鈕後請稍後')
-        case 'test':
-            st.sidebar.write('測試用 123123')
+
+            st.sidebar.warning('花費較多時間，點擊訓練按鈕後請稍後')
 
     if st.sidebar.button(label = '訓練'):
-        run_model(model_options)
+        if model == '綜合測驗':
+            test_model()
+        else:
+            run_model(model_options)
 
 # 頁面設定
 st.set_page_config(page_title = 'NSYSU - 資料探勘')
@@ -198,19 +206,27 @@ with models_tab:
 
     st.subheader('分布圖')
 
+    dataset = st.selectbox(label = '資料集: ',
+                           options = ('資料集 A', '資料集 B'))
+    
+    if dataset == '資料集 A':
+        train_data = dtA_train_data
+    else:
+        train_data = dtB_train_data
+
     # 圖表調整欄
     col1, col2 = st.columns(2)
     with col1:
         x_select = st.selectbox(label = 'X 軸',
-                                options = dtA_train_data.columns.values[:-1],
+                                options = train_data.columns.values[:-1],
                                 index = 2)
     with col2:
         y_select = st.selectbox(label = 'Y 軸',
-                                options = dtA_train_data.columns.values[:-1],
+                                options = train_data.columns.values[:-1],
                                 index = 3)
 
     # 統整圖表 
-    st.scatter_chart(dtA_train_data, x = x_select, y = y_select, color = 'Outcome')
+    st.scatter_chart(train_data, x = x_select, y = y_select, color = 'Outcome')
 
     # fig, ax = plt.subplots()
     # ax.scatter(data[x_select], data[y_select], c = data['Outcome'])
