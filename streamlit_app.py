@@ -13,15 +13,20 @@ NormValue = 2
 Normalize = True
 learning_rate = 0.001
 n_iters = 1000
-Score = 0
 n_estimators = 10
 max_depth = 10
 min_samples_split = 2
 kernal = 'rbf'
 c = 1.0
 gamma = 0.2
-Analysis = {}
-test_measures = {}
+
+A_Score = 0
+A_Analysis = {}
+A_test_measures = {}
+
+B_Score = 0
+B_Analysis = {}
+B_test_measures = {}
 
 dtA_train_path = f'./dataset/dtA/train_data.csv'
 dtA_test_path = f'./dataset/dtA/test_data.csv'
@@ -30,8 +35,17 @@ dtB_test_path = f'./dataset/dtB/test_data.csv'
 
 def run_model(model_option):
 
-    global kValue, NormValue, Normalize, learning_rate, n_iters, Score, Analysis,n_estimators,max_depth,min_samples_split,kernal,c,gamma
+    global kValue, NormValue, Normalize, learning_rate, n_iters, n_estimators, max_depth, min_samples_split, kernal, c, gamma
+    global A_Score, B_Score, A_Analysis, B_Analysis
 
+
+    model_options = {'K Nearest Neighbors' : KNNClassifier(k = kValue, normalize = Normalize, normDistance = NormValue),
+                     'Linear SVM' : SVMClassifier(learning_rate = learning_rate, n_iters = n_iters),
+                     'Neural Network' : NeuralNetClassifier(learning_rate = learning_rate, n_iters = n_iters),
+                     'Random Forest' : RandomForestClassifier(n_estimators= n_estimators , max_depth= max_depth , min_samples_split= min_samples_split , normalize= Normalize),
+                     'Kernel SVM' : SVMClassifierWithKernel(kernel= kernal , C=c , gamma= gamma , n_iters= n_iters , normalize= Normalize),}
+
+    # Data Set A
     dataset = 'dtA'
 
     train_path = f"./dataset/{dataset}/train_data.csv"
@@ -46,16 +60,30 @@ def run_model(model_option):
     x_test = test_data.iloc[:, :-1]
     y_test = test_data.iloc[:, -1]
 
-    model_options = {'K Nearest Neighbors' : KNNClassifier(k = kValue, normalize = Normalize, normDistance = NormValue),
-                     'Linear SVM' : SVMClassifier(learning_rate = learning_rate, n_iters = n_iters),
-                     'Neural Network' : NeuralNetClassifier(learning_rate = learning_rate, n_iters = n_iters),
-                     'Random Forest' : RandomForestClassifier(n_estimators= n_estimators , max_depth= max_depth , min_samples_split= min_samples_split , normalize= Normalize),
-                     'Kernel SVM' : SVMClassifierWithKernel(kernel= kernal , C=c , gamma= gamma , n_iters= n_iters , normalize= Normalize),}
+    model = model_options[model_option]
+    model.fit(x_train,  y_train)
+    A_Analysis = model.analysis(x_test, y_test)
+    A_Score = A_Analysis['Accuracy'] * 100
+
+    # Data Set B
+    dataset = 'dtB'
+
+    train_path = f"./dataset/{dataset}/train_data.csv"
+    train_data = pd.read_csv(train_path)
+
+    x_train = train_data.iloc[:, :-1]
+    y_train = train_data.iloc[:, -1]
+
+    test_path = f"./dataset/{dataset}/test_data.csv"
+    test_data = pd.read_csv(test_path)
+
+    x_test = test_data.iloc[:, :-1]
+    y_test = test_data.iloc[:, -1]
 
     model = model_options[model_option]
     model.fit(x_train,  y_train)
-    Analysis = model.analysis(x_test, y_test)
-    Score = Analysis['Accuracy'] * 100
+    B_Analysis = model.analysis(x_test, y_test)
+    B_Score = B_Analysis['Accuracy'] * 100
 
 def test_model():
 
@@ -234,10 +262,14 @@ with models_tab:
 
     # 顯示訓練結果
     st.subheader('模型訓練結果')
-    if Score:
-        st.write(f'#### 模型 : {model_options} Classifier')
-        st.success(f'正確率 : {Score:.2f} %')
-        st.table(Analysis)
+    if A_Score:
+        st.write(f'### 模型 : {model_options} Classifier')
+        st.write(f'##### 資料集 A')
+        st.success(f'正確率 : {A_Score:.2f} %')
+        st.table(A_Analysis)
+        st.write(f'##### 資料集 B')
+        st.success(f'正確率 : {B_Score:.2f} %')
+        st.table(B_Analysis)
     else:
         st.info(f'請先在左側側邊欄訓練後觀看結果')
 
